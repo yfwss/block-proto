@@ -1,0 +1,565 @@
+syntax = "proto3";
+
+package block_proto;
+
+service BlockGrpcService {
+  // wallet rpc
+  rpc WalletTokenPrice(WalletTokenPriceRequest) returns (WalletTokenPriceResponse) {}
+  rpc WalletTxDetails(WalletTxDetailsRequest) returns (WalletTxListResponse) {}
+  rpc WalletTokenUpdated(WalletTokenUpdatedRequest) returns (WalletTokenListAndVersionResponse) {}
+  rpc WalletTokenSearch(WalletTokenSearchRequest) returns (WalletTokenListResponse) {}
+  rpc WalletGetTokenListByType(WalletGetTokenListByTypeRequest) returns (WalletTokenListAndVersionResponse) {}
+  rpc WalletGetTransactionList(WalletTxListRequest) returns (WalletTxListResponse) {}
+
+  // block explorer
+  rpc CountTransactionByTimeRange(CountByTimeRangeRequest) returns (CountByTimeRangeResponse) {}
+  rpc GetBlocks(GetBlocksRequest) returns (GetBlocksResponse) {}
+  rpc CountTransactionByBlockNumber(CountTransactionByBlockNumberRequest) returns (CountTransactionByBlockNumberResponse) {}
+  rpc CountAccountByTimeRange(CountByTimeRangeRequest) returns (CountByTimeRangeResponse) {}
+  rpc CountContractByTimeRange(CountByTimeRangeRequest) returns (CountByTimeRangeResponse) {}
+  rpc ApiVerifyTokenSymbol(ApiVerifyTokenContractRequest) returns (ApiVerifyTokenContractResponse) {}
+  rpc ApiBlockOverview(ApiBlockOverviewRequest) returns (ApiBlockOverviewResponse) {}
+  rpc ApiTxOverview(ApiTxOverviewRequest) returns (ApiTxOverviewResponse) {}
+  rpc ApiCountAddress(ApiCountAddressRequest) returns (ApiCountAddressResponse) {}
+  rpc ApiTxExists(ApiTxOverviewRequest) returns (ApiTxExistsResponse) {}
+  rpc ApiBlockExists(ApiBlockOverviewRequest) returns (ApiBlockExistsResponse) {}
+  rpc ApiTxListByContract(ApiTxListByContractRequest) returns (ApiTxListByContractResponse) {}
+  rpc ApiContractOverview(ApiContractOverviewRequest) returns (ApiContractOverviewResponse) {}
+  rpc ApiAddressOverview(ApiAddressOverviewRequest) returns (ApiAddressOverviewResponse) {}
+  rpc ApiTxListByAccount(ApiTxListByAccountRequest) returns (ApiTxListByAccountResponse) {}
+  rpc ApiGetLatestTxList(ApiGetLatestTxListRequest) returns (ApiGetLatestTxListResponse) {}
+  rpc ApiBlockchainBlockList(ApiBlockchainBlockListRequest) returns (ApiBlockchainBlockListResponse) {}
+  rpc ApiBlockchainAccountList(ApiBlockchainAccountListRequest) returns (ApiBlockchainAccountListResponse) {}
+  rpc ApiBlockchainTxList(ApiBlockchainTxListRequest) returns (ApiBlockchainTxListResponse) {}
+  rpc ApiSmartContractList(ApiSmartContractListRequest) returns (ApiSmartContractListResponse) {}
+  rpc ApiGetBlockNumberByBlockHash(ApiGetBlockNumberByBlockHashRequest) returns (ApiGetBlockNumberByBlockHashResponse) {}
+}
+
+// wallet
+message WalletTokenPriceRequest {
+  message TokenData {
+    string contract_address = 1;
+    string symbol = 2;
+  }
+
+  repeated TokenData token_data_array = 1;
+
+  enum ChainType {
+    ETHEREUM = 0;
+    EVRYNET = 1;
+    BSC = 2;
+  }
+  ChainType chain_type = 2;
+}
+
+message WalletTokenPriceResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  message TokenPriceData {
+    string contract_address = 1;
+    string symbol = 2;
+    string price = 3;
+  }
+  repeated TokenPriceData token_price_data_array = 3;
+}
+
+message WalletTxDetailsRequest {
+  string tx_hash = 1;
+
+  enum ChainType {
+    ETHEREUM = 0;
+    EVRYNET = 1;
+    BSC = 2;
+  }
+  ChainType chain_type = 2;
+}
+
+message WalletTokenUpdatedRequest {
+  uint32 version = 1;
+
+  enum ChainType {
+    ETHEREUM = 0;
+    EVRYNET = 1;
+    BSC = 2;
+  }
+  ChainType chain_type = 2;
+}
+
+message WalletTokenListAndVersionResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  message TokenItem {
+    string symbol = 1;
+    string name = 2;
+    string contract_address = 3;
+    uint64 gas_limit = 4;
+    uint32 decimal = 5;
+    string icon = 6;
+    bool is_popular = 7;
+    bool add_by_default = 8;
+    string token_type = 9;
+    uint32 version = 10;
+  }
+  repeated TokenItem token_item_array = 3;
+  uint32 latest_version = 4;
+}
+
+message WalletTokenSearchRequest {
+  string keyword = 1;
+
+  enum ChainType {
+    ETHEREUM = 0;
+    EVRYNET = 1;
+    BSC = 2;
+  }
+  ChainType chain_type = 2;
+}
+
+message WalletGetTokenListByTypeRequest {
+  enum TokenListType {
+    ALL = 0;
+    POPULAR = 1;
+    DEFAULT = 2;
+  }
+
+  TokenListType type = 1;
+
+  enum ChainType {
+    ETHEREUM = 0;
+    EVRYNET = 1;
+    BSC = 2;
+  }
+  ChainType chain_type = 2;
+}
+
+message WalletTokenListResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  message TokenItem {
+    string symbol = 1;
+    string name = 2;
+    string contract_address = 3;
+    uint64 gas_limit = 4;
+    uint32 decimal = 5;
+    string icon = 6;
+    bool is_popular = 7;
+    bool add_by_default = 8;
+    string token_type = 9;
+    uint32 version = 10;
+  }
+  repeated TokenItem token_item_array = 3;
+}
+
+message WalletTxListRequest {
+  string account_address = 1;
+  string contract_address = 2;
+  uint32 page_number = 3;
+  uint32 page_size = 4;
+
+  enum ChainType {
+    ETHEREUM = 0;
+    EVRYNET = 1;
+    BSC = 2;
+  }
+  ChainType chain_type = 5;
+}
+
+message WalletTxListResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  message TxItem {
+    uint64 block_number = 1;
+    uint64 timestamp = 2;
+    string transaction_hash = 3;
+    string nonce = 4;
+    string block_hash = 5;
+    string from = 6;
+    string contract_address = 7;
+    string to = 8;
+    string value = 9;
+    string transaction_index = 10;
+    uint64 gas = 11;
+    uint64 gas_price = 12;
+    uint64 gas_used = 13;
+    uint64 cumulative_gas_used = 14;
+    string input = 15;
+    bool confirmed = 16;
+    int32 receipt_status = 17;
+  }
+  repeated TxItem tx_item_array = 3;
+}
+
+// block explorer (api)
+message CountTransactionByBlockNumberRequest {
+  uint64 block_number = 1;
+}
+
+message CountTransactionByBlockNumberResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  uint64 transaction_count = 3;
+}
+
+message GetBlocksRequest {
+  uint32 limit = 1;
+}
+
+message GetBlocksResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  message BlockItem {
+    uint64 block_number = 1;
+    uint64 block_time = 2;
+    string block_hash = 3;
+    string parent_hash = 4;
+    string coinbase = 5;
+    uint64 gas_limit = 6;
+  }
+  repeated BlockItem block_item_array = 3;
+}
+
+message CountByTimeRangeRequest {
+  uint64 begin_timestamp = 1;
+  uint64 end_timestamp = 2;
+}
+
+message CountByTimeRangeResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  uint64 count = 3;
+}
+
+message ApiVerifyTokenContractRequest {
+  string token_symbol = 1;
+}
+
+message ApiVerifyTokenContractResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  bool is_verified_token = 3;
+  string token_contract_address = 4;
+}
+
+message ApiBlockOverviewRequest {
+  uint64 block_number = 1;
+}
+
+message ApiBlockOverviewResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  bool exists = 3;
+  uint64 block_number = 4;
+  uint64 block_time = 5;
+  string block_hash = 6;
+  string parent_hash = 7;
+  string uncle_hash = 8;
+  string block_root = 9;
+  string coinbase = 10;
+  uint64 gas_limit = 11;
+  uint64 gas_used = 12;
+}
+
+message ApiTxOverviewRequest {
+  string tx_hash = 1;
+}
+
+message ApiTxOverviewResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  bool isPending = 3;
+  uint64 nonce = 4;
+  uint64 gas_limit = 5;
+  uint64 gas_used = 6;
+  string block_hash = 7;
+  uint64 block_number = 8;
+  string from_address = 9;
+  int32 from_type = 10;
+  string to_address = 11;
+  int32 to_type = 12;
+  string value = 13;
+  string tx_hash = 14;
+  uint64 gas_price = 15;
+  int32 tx_status = 16;
+  uint64 block_time = 17;
+  uint64 block_tx_count = 18;
+  string type = 19;
+  string data = 20;
+
+  message TokenTransferred {
+    string data = 1;
+    string token_symbol = 2;
+    uint32 decimal = 3;
+    string from = 4;
+  }
+  repeated TokenTransferred token_transferred_array=21;
+}
+
+message ApiCountAddressRequest {
+  string address = 1;
+}
+
+message ApiCountAddressResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  uint64 account_count = 3;
+  uint64 contract_count = 4;
+}
+
+message ApiTxExistsResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  bool exists = 3;
+}
+
+message ApiBlockExistsResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  bool exists = 3;
+}
+
+message ApiTxListByContractRequest {
+  string contract_address = 1;
+  uint64 page_number = 2;
+  uint32 page_size = 3;
+}
+
+message ApiTxListByContractResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  message TxItem {
+    string tx_hash = 1;
+    uint64 block_number = 2;
+    string tx_from = 3;
+    string tx_to = 4;
+    int32 tx_status = 5;
+    uint64 block_time = 6;
+    uint64 gas_price = 7;
+    uint64 gas_used = 8;
+    string contract_value = 9;
+  }
+  repeated TxItem tx_item_array = 3;
+}
+
+message ApiContractOverviewRequest {
+  string contract_address = 1;
+}
+
+message ApiContractOverviewResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  string token_symbol = 3;
+  string token_name = 4;
+  string total_supply = 5;
+  string contract_address = 6;
+  uint32 token_decimal = 7;
+  string token_icon = 8;
+  string token_type = 9;
+  string token_price = 10;
+  uint64 tx_count = 11;
+}
+
+message ApiAddressOverviewRequest {
+  string address = 1; // could be an account address or a contract address
+  uint32 limit = 2;
+}
+
+message ApiAddressOverviewResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  string address_hash = 3;
+  int32 address_type = 4;
+  string deployed_tx_hash = 5;
+  string creator = 6;
+
+  message TxItem {
+    string tx_hash = 1;
+    uint64 block_number = 2;
+    string tx_from = 3;
+    string tx_to = 4;
+    int32 tx_status = 5;
+    string value = 6;
+    uint64 block_timestamp = 7;
+    string tx_type = 8;
+    uint64 gas_price = 9;
+    uint64 gas_used = 10;
+    string token_name = 11;
+    uint32 decimal = 12;
+  }
+  repeated TxItem tx_item_array = 7;
+
+  uint64 tx_count = 8;
+}
+
+message ApiTxListByAccountRequest {
+  string account = 1;
+  uint32 page_number = 2;
+  uint32 page_size = 3;
+}
+
+message ApiTxListByAccountResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  uint64 tx_count = 3;
+
+  message TxItem {
+    string data = 1;
+    string token_name = 2;
+    string nonce = 3;
+    uint64 gas_limit = 4;
+    uint64 gas_used = 5;
+    uint32 decimal = 6;
+    string value = 7;
+    string tx_hash = 8;
+    uint64 gas_price = 9;
+    int32 tx_status = 10;
+    uint64 block_timestamp = 11;
+    uint64 block_number = 12;
+    string from_address = 13;
+    string to_address = 14;
+  }
+  repeated TxItem tx_item_array = 4;
+}
+
+message ApiGetLatestTxListRequest {
+  uint32 limit = 1;
+}
+
+message ApiGetLatestTxListResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  message TxItem {
+    string tx_hash = 1;
+    uint64 block_number = 2;
+    string from_address = 3;
+    string to_address = 4;
+    uint64 block_timestamp = 5;
+  }
+  repeated TxItem tx_item_array = 3;
+}
+
+message ApiBlockchainBlockListRequest {
+  uint64 page_number = 1;
+  uint32 page_size = 2;
+}
+
+message ApiBlockchainBlockListResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  message BlockItem {
+    uint64 block_number = 1;
+    uint64 block_timestamp = 2;
+    uint64 txnCnt = 3;
+    string miner = 4;
+    uint64 gas_limit = 5;
+    uint64 avg_gas_price = 6;
+  }
+  repeated BlockItem block_item_array = 3;
+
+  uint64 total_count = 4;
+}
+
+message ApiBlockchainAccountListRequest {
+  uint64 page_number = 1;
+  uint32 page_size = 2;
+}
+
+message ApiBlockchainAccountListResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  message AccountItem {
+    string account_address = 1;
+    uint64 tx_count = 2;
+  }
+  repeated AccountItem account_item_array = 3;
+
+  uint64 total_account_count = 4;
+}
+
+message ApiBlockchainTxListRequest {
+  uint64 page_number = 1;
+  uint32 page_size = 2;
+
+  string account_address = 3;
+  uint64 block_number = 4;
+}
+
+message ApiBlockchainTxListResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  uint64 total_tx_count = 3;
+
+  message TxItem {
+    string tx_hash = 1;
+    uint64 block_number = 2;
+    uint64 block_timestamp = 3;
+    string from_address = 4;
+    int32 from_type = 5;
+    string to_address = 6;
+    int32 to_type = 7;
+    int32 tx_status = 8;
+    string value = 9;
+    string tx_type = 10;
+    uint64 gas_price = 11;
+    uint64 gas_used = 12;
+  }
+  repeated TxItem tx_item_array = 4;
+}
+
+message ApiSmartContractListRequest {
+  uint64 page_number = 1;
+  uint32 page_size = 2;
+}
+
+message ApiSmartContractListResponse {
+  ReturnCode code = 1;
+  string message = 2;
+
+  uint64 total_contracts_count = 3;
+
+  message ContractItem {
+    uint64 block_timestamp = 1;
+    string creator_address = 2;
+    string deployed_tx_hash = 3;
+    string contract_address = 4;
+  }
+  repeated ContractItem contract_item_array = 4;
+}
+
+message ApiGetBlockNumberByBlockHashRequest {
+  string block_hash = 1;
+}
+
+message ApiGetBlockNumberByBlockHashResponse {
+  ReturnCode code = 1;
+  string message = 2;
+  uint64 block_number = 3;
+}
+
+enum ReturnCode {
+    OK = 0;
+    INTERNAL_ERROR = 1;
+    REQUEST_PARAM_ILLEGAL = 2;
+    CASES_NOT_SUPPORTED = 3;
+    OTHER_ERROR = 99;
+}
