@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package block_proto;
 
+option go_package = "./block_proto";
+
 service BlockGrpcService {
   // wallet rpc
   rpc WalletTokenPrice(WalletTokenPriceRequest) returns (WalletTokenPriceResponse) {}
@@ -73,6 +75,8 @@ message WalletTxDetailsRequest {
     BSC = 2;
   }
   ChainType chain_type = 2;
+
+  string token_type = 3;
 }
 
 message WalletTokenUpdatedRequest {
